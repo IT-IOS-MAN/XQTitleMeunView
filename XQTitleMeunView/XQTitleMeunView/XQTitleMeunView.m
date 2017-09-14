@@ -8,14 +8,11 @@
 
 #import "XQTitleMeunView.h"
 #import "XQTitleMeunButton.h"
-#import "Masonry.h"
 #import "XQTitleMeunCell.h"
 
 static NSInteger const ROW_HEIGHT = 40;
 
 NSInteger const MUEUN_HEIGHT = 46;
-
-#define WeakSelf __weak typeof(self) weakSelf = self;
 
 @interface XQTitleMeunView ()<UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate>
 
@@ -28,6 +25,10 @@ NSInteger const MUEUN_HEIGHT = 46;
 @property(nonatomic, weak) UIView *typeView;
 
 @property(nonatomic, weak) UIView *tableViewBackgroundView;
+
+@property(nonatomic, strong) NSLayoutConstraint *tableViewBottonConstraint;
+
+@property(nonatomic, strong) NSLayoutConstraint *selfHeightConstraint;
 
 @end
 
@@ -67,15 +68,12 @@ NSInteger const MUEUN_HEIGHT = 46;
 {
     NSInteger number = [self.delegate numberOfSectionsInTitleMeunView:self];
     
-    WeakSelf
-    
-    
     while (self.typeView.subviews.count < number) {
         
         XQTitleMeunButton *btn = [[XQTitleMeunButton alloc] init];
         
         [btn addTarget:self action:@selector(titleMeunButtonDidClick:) forControlEvents:UIControlEventTouchUpInside];
-        
+        btn.translatesAutoresizingMaskIntoConstraints = NO;
         [self.typeView addSubview:btn];
     }
     
@@ -97,16 +95,45 @@ NSInteger const MUEUN_HEIGHT = 46;
             [btn setTitle:title forState:UIControlStateNormal];
         }
         
-        [btn mas_makeConstraints:^(MASConstraintMaker *make) {
-            if (i) {
-                make.left.equalTo(weakSelf.typeView.subviews[i - 1].mas_right);
-            }else{
-                make.left.equalTo(weakSelf.typeView);
-            }
-            make.top.equalTo(weakSelf.typeView);
-            make.height.equalTo(weakSelf.typeView);
-            make.width.equalTo(weakSelf.typeView.mas_width).with.multipliedBy(1.0/number);
-        }];
+        [self.typeView addConstraints:@[[NSLayoutConstraint constraintWithItem:btn
+                                                                        attribute:NSLayoutAttributeHeight
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.typeView
+                                                                        attribute:NSLayoutAttributeHeight
+                                                                       multiplier:1
+                                                                         constant:0],
+                                           
+                                           [NSLayoutConstraint constraintWithItem:btn
+                                                                        attribute:NSLayoutAttributeTop
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.typeView
+                                                                        attribute:NSLayoutAttributeTop
+                                                                       multiplier:1
+                                                                         constant:0],
+                                        (i ? [NSLayoutConstraint constraintWithItem:btn
+                                                                          attribute:NSLayoutAttributeLeft
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.typeView.subviews[i - 1]
+                                                                          attribute:NSLayoutAttributeRight
+                                                                         multiplier:1
+                                                                           constant:0]
+                                         :
+                                           [NSLayoutConstraint constraintWithItem:btn
+                                                                        attribute:NSLayoutAttributeLeft
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.typeView
+                                                                        attribute:NSLayoutAttributeLeft
+                                                                       multiplier:1
+                                                                         constant:0]),
+                                           
+                                           [NSLayoutConstraint constraintWithItem:btn
+                                                                        attribute:NSLayoutAttributeWidth
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.typeView
+                                                                        attribute:NSLayoutAttributeWidth
+                                                                       multiplier:1.0/number
+                                                                         constant:0]
+                                           ]];
         
         i++;
     }
@@ -115,57 +142,135 @@ NSInteger const MUEUN_HEIGHT = 46;
 
 -(void)setupLineView
 {
-    WeakSelf
     
     UIView *lineView = [[UIView alloc] init];
     lineView.backgroundColor = [UIColor lightGrayColor];
+    lineView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:lineView];
-    [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(weakSelf.typeView);
-        make.left.equalTo(weakSelf.typeView);
-        make.top.equalTo(weakSelf.typeView.mas_bottom).with.offset(-0.5);
-        make.height.mas_equalTo(0.5);
-    }];
+    
+    [self addConstraints:@[[NSLayoutConstraint constraintWithItem:lineView
+                                                                    attribute:NSLayoutAttributeHeight
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:nil
+                                                                    attribute:NSLayoutAttributeHeight
+                                                                   multiplier:1
+                                                                     constant:0.5],
+                                       
+                                       [NSLayoutConstraint constraintWithItem:lineView
+                                                                    attribute:NSLayoutAttributeTop
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.typeView
+                                                                    attribute:NSLayoutAttributeBottom
+                                                                   multiplier:1
+                                                                     constant:-0.5],
+                                       
+                                       [NSLayoutConstraint constraintWithItem:lineView
+                                                                    attribute:NSLayoutAttributeLeft
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self
+                                                                    attribute:NSLayoutAttributeLeft
+                                                                   multiplier:1
+                                                                     constant:0],
+                                       
+                                       [NSLayoutConstraint constraintWithItem:lineView
+                                                                    attribute:NSLayoutAttributeRight
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self
+                                                                    attribute:NSLayoutAttributeRight
+                                                                   multiplier:1
+                                                                     constant:0]
+                                       ]];
 }
 
 -(void)setupTypeView
 {
     
-    WeakSelf
-    
     UIView *typeView = [[UIView alloc] init];
+    typeView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:typeView];
     self.typeView = typeView;
     
-    [typeView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(weakSelf);
-        make.top.equalTo(weakSelf);
-        make.height.mas_equalTo(MUEUN_HEIGHT);
-        make.right.equalTo(weakSelf);
-    }];
+    [self addConstraints:@[[NSLayoutConstraint constraintWithItem:typeView
+                                                        attribute:NSLayoutAttributeHeight
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:nil
+                                                        attribute:NSLayoutAttributeHeight
+                                                       multiplier:1
+                                                         constant:MUEUN_HEIGHT],
+                           
+                           [NSLayoutConstraint constraintWithItem:typeView
+                                                        attribute:NSLayoutAttributeTop
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:self
+                                                        attribute:NSLayoutAttributeTop
+                                                       multiplier:1
+                                                         constant:0],
+                           
+                           [NSLayoutConstraint constraintWithItem:typeView
+                                                        attribute:NSLayoutAttributeLeft
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:self
+                                                        attribute:NSLayoutAttributeLeft
+                                                       multiplier:1
+                                                         constant:0],
+                           
+                           [NSLayoutConstraint constraintWithItem:typeView
+                                                        attribute:NSLayoutAttributeRight
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:self
+                                                        attribute:NSLayoutAttributeRight
+                                                       multiplier:1
+                                                         constant:0]
+                           ]];
 }
 
 -(void)setupTableView
 {
-    WeakSelf
     
     CGFloat topH = MUEUN_HEIGHT;
     
     UIButton *tableViewBackgroundView = [[UIButton alloc] init];
+    tableViewBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     tableViewBackgroundView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
     [tableViewBackgroundView addTarget:self action:@selector(tableViewBackgroundViewDidClick) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:tableViewBackgroundView];
     
-    [tableViewBackgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-        make.left.equalTo(weakSelf);
-        make.top.mas_equalTo(topH);
-        make.bottom.equalTo(weakSelf);
-        make.right.equalTo(weakSelf);
-    }];
+    [self addConstraints:@[[NSLayoutConstraint constraintWithItem:tableViewBackgroundView
+                                                        attribute:NSLayoutAttributeTop
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:self
+                                                        attribute:NSLayoutAttributeTop
+                                                       multiplier:1
+                                                         constant:topH],
+                           
+                           [NSLayoutConstraint constraintWithItem:tableViewBackgroundView
+                                                        attribute:NSLayoutAttributeBottom
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:self
+                                                        attribute:NSLayoutAttributeBottom
+                                                       multiplier:1
+                                                         constant:0],
+                           
+                           [NSLayoutConstraint constraintWithItem:tableViewBackgroundView
+                                                        attribute:NSLayoutAttributeLeft
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:self
+                                                        attribute:NSLayoutAttributeLeft
+                                                       multiplier:1
+                                                         constant:0],
+                           
+                           [NSLayoutConstraint constraintWithItem:tableViewBackgroundView
+                                                        attribute:NSLayoutAttributeRight
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:self
+                                                        attribute:NSLayoutAttributeRight
+                                                       multiplier:1
+                                                         constant:0]
+                           ]];
     self.tableViewBackgroundView= tableViewBackgroundView;
     
     UITableView *tableView = [[UITableView alloc] init];
+    tableView.translatesAutoresizingMaskIntoConstraints = NO;
     tableView.delegate = self;
     tableView.dataSource = self;
     tableView.rowHeight = ROW_HEIGHT;
@@ -173,13 +278,41 @@ NSInteger const MUEUN_HEIGHT = 46;
     [tableViewBackgroundView addSubview:tableView];
     self.tableView = tableView;
     
-    [tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        
-        make.left.equalTo(tableViewBackgroundView);
-        make.top.equalTo(tableViewBackgroundView);
-        make.bottom.equalTo(tableViewBackgroundView);
-        make.right.equalTo(tableViewBackgroundView);
-    }];
+    _tableViewBottonConstraint = [NSLayoutConstraint constraintWithItem:tableView
+                                 attribute:NSLayoutAttributeBottom
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:tableViewBackgroundView
+                                 attribute:NSLayoutAttributeBottom
+                                multiplier:1
+                                  constant:0];
+    
+    
+    [tableViewBackgroundView addConstraints:@[[NSLayoutConstraint constraintWithItem:tableView
+                                                                           attribute:NSLayoutAttributeTop
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:tableViewBackgroundView
+                                                                           attribute:NSLayoutAttributeTop
+                                                                          multiplier:1
+                                                                            constant:0],
+                                              
+                                              _tableViewBottonConstraint,
+                                              
+                                              [NSLayoutConstraint constraintWithItem:tableView
+                                                                           attribute:NSLayoutAttributeLeft
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:tableViewBackgroundView
+                                                                           attribute:NSLayoutAttributeLeft
+                                                                          multiplier:1
+                                                                            constant:0],
+                                              
+                                              [NSLayoutConstraint constraintWithItem:tableView
+                                                                           attribute:NSLayoutAttributeRight
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:tableViewBackgroundView
+                                                                           attribute:NSLayoutAttributeRight
+                                                                          multiplier:1
+                                                                            constant:0]
+                                              ]];
     
     UITapGestureRecognizer * bassScrollTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapGestureRecognizer)];
     bassScrollTap.delegate = self;
@@ -254,13 +387,17 @@ NSInteger const MUEUN_HEIGHT = 46;
         _currentSubIndex = 0;
         _selectBtn = nil;
         
-        [self.tableView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.bottom.equalTo(self.tableViewBackgroundView).with.offset(0);
-        }];
+        _tableViewBottonConstraint.constant = 0;
         
-        [self mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.height.mas_equalTo(MUEUN_HEIGHT);
-        }];
+        if (self.selfHeightConstraint) {
+            
+            self.selfHeightConstraint.constant = MUEUN_HEIGHT;
+        } else {
+            CGRect frame = self.frame;
+            frame.size.height = MUEUN_HEIGHT;
+            self.frame = frame;
+        }
+
     }
 }
 
@@ -279,13 +416,15 @@ NSInteger const MUEUN_HEIGHT = 46;
         
         _currentSubIndex = [self.delegate titleMeunView:self numberOfRowsInSection:section];
         
-        [self mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.height.mas_equalTo([UIScreen mainScreen].bounds.size.height - _navHeight);
-        }];
+        if (self.selfHeightConstraint) {
+            self.selfHeightConstraint.constant = [UIScreen mainScreen].bounds.size.height - _navHeight;
+        }else{
+            CGRect frame = self.frame;
+            frame.size.height = [UIScreen mainScreen].bounds.size.height - _navHeight;
+            self.frame = frame;
+        }
         
-        [self.tableView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.bottom.equalTo(self.tableViewBackgroundView).with.offset(-MUEUN_HEIGHT);
-        }];
+        _tableViewBottonConstraint.constant = -MUEUN_HEIGHT;
         
         [self.tableView reloadData];
         
@@ -307,5 +446,29 @@ NSInteger const MUEUN_HEIGHT = 46;
     [self tableViewBackgroundViewDidClick];
 }
 
+#pragma mark - 
+- (NSLayoutConstraint *)selfHeightConstraint
+{
+    if (!_selfHeightConstraint) {
+        
+        static BOOL constraint;
+        
+        if (constraint) {
+            return _selfHeightConstraint;
+        }
+        
+        for (NSLayoutConstraint * constraint in self.constraints) {
+            if (constraint.firstAttribute == NSLayoutAttributeHeight && constraint.firstItem == self) {
+                _selfHeightConstraint = constraint;
+            }
+        }
+        
+        if (!_selfHeightConstraint) {
+            constraint = YES;
+        }
+        
+    }
+    return _selfHeightConstraint;
+}
 
 @end

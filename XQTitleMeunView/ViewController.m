@@ -27,6 +27,7 @@
     meunView.navHeight = 50;
     meunView.delegate = self;
     [self.view addSubview:meunView];
+//    meunView.frame = CGRectMake(0, meunView.navHeight, self.view.frame.size.width, MUEUN_HEIGHT);
     
     [meunView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(meunView.navHeight);

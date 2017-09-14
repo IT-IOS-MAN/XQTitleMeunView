@@ -7,7 +7,6 @@
 //
 
 #import "XQTitleMeunCell.h"
-#import "Masonry.h"
 
 #define WeakSelf __weak typeof(self) weakSelf = self;
 
@@ -42,17 +41,44 @@
 
 -(void)setupView
 {
-    WeakSelf
     
     UIView *lineView = [[UIView alloc] init];
     lineView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
+    lineView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:lineView];
-    [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(weakSelf.contentView);
-        make.left.equalTo(weakSelf.contentView);
-        make.bottom.equalTo(weakSelf.contentView);
-        make.height.mas_equalTo(0.5);
-    }];
+    
+    [self.contentView addConstraints:@[[NSLayoutConstraint constraintWithItem:lineView
+                                                             attribute:NSLayoutAttributeHeight
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:nil
+                                                             attribute:NSLayoutAttributeHeight
+                                                            multiplier:1
+                                                              constant:0.5],
+                                
+                                [NSLayoutConstraint constraintWithItem:lineView
+                                                             attribute:NSLayoutAttributeBottom
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:self.contentView
+                                                             attribute:NSLayoutAttributeBottom
+                                                            multiplier:1
+                                                              constant:-0.5],
+                                
+                                [NSLayoutConstraint constraintWithItem:lineView
+                                                             attribute:NSLayoutAttributeLeft
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:self.contentView
+                                                             attribute:NSLayoutAttributeLeft
+                                                            multiplier:1
+                                                              constant:0],
+                                
+                                [NSLayoutConstraint constraintWithItem:lineView
+                                                             attribute:NSLayoutAttributeRight
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:self.contentView
+                                                             attribute:NSLayoutAttributeRight
+                                                            multiplier:1
+                                                              constant:0]
+                                ]];
 }
 
 - (void)awakeFromNib {
