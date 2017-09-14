@@ -16,13 +16,11 @@
 /// 根据字符算长度
 -(CGSize) sizeWithMaxSize:(CGSize) size font: (UIFont *) font
 {
-#ifdef IOS_VERSION_7_OR_ABOVE
+
     NSDictionary *attr = @{NSFontAttributeName : font};
     
     return [self boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin attributes:attr context:nil].size;
-#else
-    return [self sizeWithFont:font  constrainedToSize:size lineBreakMode:NSLineBreakByWordWrapping];
-#endif
+
 }
 
 
