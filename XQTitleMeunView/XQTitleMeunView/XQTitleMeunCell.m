@@ -3,7 +3,7 @@
 //  EasyFamily
 //
 //  Created by mac-2016 on 17/5/20.
-//  Copyright © 2017年 GXQ. All rights reserved.
+//  Copyright © 2017年 IT_XQ. All rights reserved.
 //
 
 #import "XQTitleMeunCell.h"

@@ -3,7 +3,7 @@
 //  EasyFamily
 //
 //  Created by mac-2016 on 17/2/22.
-//  Copyright © 2017年 陈嘉健. All rights reserved.
+//  Copyright © 2017年 IT_XQ. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
